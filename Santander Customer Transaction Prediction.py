@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
 # Yichen-Zuo
 
 # supervised imbalanced classification case
@@ -31,67 +30,27 @@ import xgboost
 import warnings
 warnings.filterwarnings('ignore')
 
-
-# In[7]:
-
-
 os.getcwd()
-
-
-# In[8]:
-
 
 train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
-
-
-# In[9]:
-
 
 train_df = train.copy()
 test_df = test.copy()
 train_df.head()
 
-
-# In[10]:
-
-
 test_df.head()
-
-
-# In[11]:
-
 
 train_df.shape
 
-
-# In[12]:
-
-
 test_df.shape
 
-
-# In[13]:
-
-
 train_df.columns
-
-
-# In[14]:
-
 
 # may need feature scaling
 train_df.describe()
 
-
-# In[15]:
-
-
 test_df.describe()
-
-
-# In[16]:
-
 
 def check_missing(data):
     # Total missing values
@@ -111,57 +70,25 @@ def check_missing(data):
     
     return mis_tt
 
-
-# In[17]:
-
-
 check_missing(train_df) # no missing value
-
-
-# In[18]:
-
 
 # All attributes are numerical
 train_df.info()
 
-
-# In[19]:
-
-
 test_df.info()
-
-
-# In[20]:
-
 
 train_df.iloc[:,2:].hist(bins=50, figsize = (20,15))
 # nearly normal distributed
 
-
-# In[21]:
-
-
 sns.countplot(train_df['target'], palette = "Set2")
 # there is an imbalanced class problem
 
-
-# In[22]:
-
-
 train_df['target'].value_counts()
-
-
-# In[23]:
-
 
 features = train_df.columns.values[2:203]
 correlations = train_df[features].corr().abs().unstack().sort_values(kind="quicksort").reset_index()
 correlations = correlations[correlations['level_0'] != correlations['level_1']]
 correlations.tail(10) # correlation between each variable is not significance
-
-
-# In[26]:
-
 
 # try logistic regression -- why imbalanced will be a bring problem. 
 
@@ -179,10 +106,6 @@ X_test_std = sc.transform(X_test)
 lr_reg = LogisticRegression()
 clf = lr_reg.fit(X_train_std, y_train)
 pred_lr = clf.predict(X_test_std)
-
-
-# In[27]:
-
 
 # Accuracy = TP+TN/Total
 # Precison = TP/(TP+FP)
@@ -218,9 +141,6 @@ print("\n--------------------------------Classification Report------------------
 # High accuracy rate was just an illusion.
 
 
-# In[28]:
-
-
 # try PCA
 
 # Covar matrix / eigenvalues / eigenvectors
@@ -243,9 +163,6 @@ plt.show()
 # From the plot, we can see PCA is not very useful, since the correlation between features is not significance.
 
 
-# In[29]:
-
-
 # Exploratory Data Analysis
 def plot_density(df_1,df_2,features):
     i = 0
@@ -258,9 +175,6 @@ def plot_density(df_1,df_2,features):
     plt.show()
 
 
-# In[30]:
-
-
 sns.set_style("darkgrid")
 t0 = train_df.loc[train_df['target']==0]
 t1 = train_df.loc[train_df['target']==1]
@@ -268,35 +182,20 @@ features_1 = train_df.columns.values[2:38]
 plot_density(t0,t1,features_1)
 
 
-# In[31]:
-
-
 features_2 = train_df.columns.values[38:74]
 plot_density(t0,t1,features_2)
-
-
-# In[32]:
 
 
 features_3 = train_df.columns.values[74:110]
 plot_density(t0,t1,features_3)
 
 
-# In[33]:
-
-
 features_4 = train_df.columns.values[110:146]
 plot_density(t0,t1,features_4)
 
 
-# In[34]:
-
-
 features_5 = train_df.columns.values[146:182]
 plot_density(t0,t1,features_5)
-
-
-# In[35]:
 
 
 features_6 = train_df.columns.values[182:202]
@@ -306,15 +205,8 @@ plot_density(t0,t1,features_6)
 # some seem distributed likely. like var_4, var_10, var_14
 
 
-# In[36]:
-
-
 correlation = train_df.corr()['target'].abs().sort_values()
 correlation.tail(10)
-
-
-# In[37]:
-
 
 # mean
 train_n = train_df.iloc[:,2:203]
@@ -328,23 +220,14 @@ t0_cn = t0_n.mean(axis = 0)
 t1_cn = t1_n.mean(axis = 0)
 
 
-# In[38]:
-
-
 sns.distplot(train_nn,bins = 100,kde = True, color = 'darkorange', label = 'train')
 plt.title('per row')
 plt.legend()
 
 
-# In[39]:
-
-
 sns.distplot(train_cn,bins = 100,kde = True, color = 'darkorange', label = 'train')
 plt.title('per column')
 plt.legend()
-
-
-# In[40]:
 
 
 sns.distplot(t0_nn,bins = 100,kde = True, color = 'darkblue', label = 'train target = 0')
@@ -353,16 +236,10 @@ plt.title("row  train target = 0 & train target = 1")
 plt.legend()
 
 
-# In[41]:
-
-
 sns.distplot(t0_cn,bins = 100,kde = True, color = 'darkblue', label = 'train target = 0')
 sns.distplot(t1_cn,bins = 100,kde = True, color = 'darkorange', label = 'train target = 1')
 plt.title("column  train target = 0 & train target = 1")
 plt.legend()
-
-
-# In[42]:
 
 
 # std
@@ -375,15 +252,9 @@ t1_cn_s = t1_n.std(axis = 0)
 sns.set_style("darkgrid")
 
 
-# In[43]:
-
-
 sns.distplot(train_nn_s,bins = 100,kde = True, color = 'darkorange', label = 'train')
 plt.title('std per row')
 plt.legend()
-
-
-# In[44]:
 
 
 sns.distplot(train_cn_s,bins = 100,kde = True, color = 'darkorange', label = 'train')
@@ -391,16 +262,10 @@ plt.title('std per column')
 plt.legend()
 
 
-# In[45]:
-
-
 sns.distplot(t0_nn_s,bins = 100,kde = True, color = 'darkblue', label = 'train target = 0')
 sns.distplot(t1_nn_s,bins = 100,kde = True, color = 'darkorange', label = 'train target = 1')
 plt.title("std row  train target = 0 & train target = 1")
 plt.legend()
-
-
-# In[46]:
 
 
 sns.distplot(t0_cn_s,bins = 100,kde = True, color = 'darkblue', label = 'train target = 0')
@@ -411,14 +276,8 @@ plt.legend()
 # fram above plots, we can see we need to select important features or constuct new features.
 
 
-# In[47]:
-
-
 # features = [c for c in train_df.columns if c not in ['ID_code', 'target']]
 # target = train_df['target']
-
-
-# In[49]:
 
 
 # LightGBM -- no Standardization (tree based model)
@@ -482,9 +341,6 @@ for fold_,(tr_id, val_id) in enumerate(skf.split(train_df, train_df.target.value
     print("\n\nCV AUC: {:<0.5f}".format(metrics.roc_auc_score(train_df.target.values, pred)))
 
 
-# In[50]:
-
-
 lgbm_matrix = confusion_matrix(train_df.target.values, pred.round())
 print("Recall :",lgbm_matrix[1,1]/(lgbm_matrix[1,1]+lgbm_matrix[1,0]))
 print("Accuracy :",(lgbm_matrix[1,1]+lgbm_matrix[0,0])/(lgbm_matrix[1,1]+lgbm_matrix[0,1]+lgbm_matrix[0,0]+lgbm_matrix[1,0]))
@@ -502,8 +358,6 @@ plt.show()
 print("\n--------------------------------Classification Report------------------------------------")
 
 
-# In[51]:
-
 
 feature_importance_col = (feature_importance_df[["predictors","importance"]]
                           .groupby("predictors")
@@ -518,9 +372,6 @@ plt.title('LightBGM Features (averaged over folds)')
 plt.tight_layout()
 
 
-# In[52]:
-
-
 # Use Lightgbm as a feature selection tool
 best_f = best_features.groupby('predictors')['importance'].mean().sort_values(ascending = False)
 
@@ -531,14 +382,8 @@ for i in best_f.index:
         print(str(j) + ": " + i + " " + str(0))       
 
 
-# In[53]:
-
-
 best_ff = best_f/best_f.sum()  # sum to 1
 best_ff[:170].sum() 
-
-
-# In[127]:
 
 
 sub_df = pd.DataFrame({"ID_code":test_df["ID_code"].values})
@@ -546,14 +391,8 @@ sub_df["target"] = predictions
 sub_df.to_csv("submission.csv", index=False)
 
 
-# In[47]:
-
-
 # f_index = best_ff[:120].index
 # final_data = pd.DataFrame(train_df,columns = f_index) # select certain columns
-
-
-# In[48]:
 
 
 # X_train_std_n = pd.DataFrame(X_train_std)
@@ -563,9 +402,6 @@ sub_df.to_csv("submission.csv", index=False)
 # X_test_std_n = pd.DataFrame(X_test_std)
 # X_test_std_n.columns = predictors
 # X_test_std_new = pd.DataFrame(X_test_std_n,columns = f_index) # select certain columns
-
-
-# In[49]:
 
 
 print("--------------------------mitigate Class Imbalance Problem------------------------------\n")
@@ -584,9 +420,6 @@ print(colored("meathods: ","green"),"RandomUnderSampler","TomekLinks","ClusterCe
 print("\n3.Hybrid, a mix of oversampling and undersampling")
 print(colored("weakness: ", "red"),"trade-off")
 print(colored("meathods: ","green"),"SMOTETomek")
-
-
-# In[68]:
 
 
 # SMOTE (Synthetic Minority Oversaample Technique)
